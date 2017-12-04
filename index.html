@@ -196,11 +196,59 @@
 			.child-mod button:nth-child(3) {
 				margin-left: 10px;
 			}
+			.bk-container {
+				position: relative;
+				width: 30px;
+				height: 30px;
+				border-radius: 15px;
+				background: #fff;
+				display: inline-block;
+				vertical-align: -14px;
+				margin-right: 8px;
+			}
+			.bk-container-current {
+				position: absolute;
+				width: 32px;
+				height: 32px;
+				border-radius: 16px;
+				/* border: 1px solid #ff7800; */
+				display: inline-block;
+				top: -2px;
+				left: -2px;
+			}
+			.bk-border-current {
+				border: 1px solid #ff7800;
+			}
+			#bk_container_pink {
+				background: #e9dfc7;
+			}
+			#bk_container_gray {
+				background: #96908e;
+			}
+			#bk_container_green {
+				background: #b6f8b4;
+			}
+			#bk_container_blue {
+				background: #564c92;
+			}
+			#bk_container_black {
+				background: #000;
+			}
+			.artical-action-mid {
+				position: fixed;
+				z-index: 10002;
+				width: 100%;
+				height: 40%;
+				top: 30%;
+			}
 		</style>
 	</head>
 	<body>
         <div id="root" class="container">
-			<div id="top_nav" class="top-nav">
+			<div class="m-artical-action">
+				<div class="artical-action-mid" id="artical_action_mid"></div>
+			</div>
+			<div id="top_nav" class="top-nav" style="display: none">
 				<div class="icon-back"></div>
 				<div class="top-nav-title">返回书架</div>
 			</div>
@@ -218,20 +266,20 @@
                     <li id="next-button">下一章</li>
                 </ul>
 			</div>
-			<div id="bottom_nav" class="bottom-nav">
+			<div id="bottom_nav" class="bottom-nav" style="display: none">
 				<div class="bottom-nav-item">
 					<div class="item-warp">
 						<div class="icon-menu"></div>
 						<div class="icon-text">目录</div>
 					</div>
 				</div>
-				<div class="bottom-nav-item">
+				<div class="bottom-nav-item" id="font_button">
 					<div class="item-warp">
-						<div class="icon-font current"></div>
+						<div class="icon-font"></div>
 						<div class="icon-text">字体</div>
 					</div>
 				</div>
-				<div class="bottom-nav-item">
+				<div class="bottom-nav-item" id="night_day_button">
 					<div class="item-warp" style="display: none">
 						<div class="icon-day"></div>
 						<div class="icon-text">白天</div>
@@ -242,8 +290,8 @@
 					</div>
 				</div>
 			</div>
-			<div class="nav-pannel-bk"></div>
-			<div class="nav-pannel" id="font_container">
+			<div class="nav-pannel-bk js-font-container" style="display: none"></div>
+			<div class="nav-pannel js-font-container" id="font_container" style="display: none">
 				<div class="child-mod">
 					<span>字号</span>
 					<button id="large_font" class="font-size-button">大</button>
@@ -254,19 +302,111 @@
 					<div class="bk-container">
 						<div class="bk-container-current"></div>
 					</div>
+					<div class="bk-container" id="bk_container_pink">
+						<div class="bk-container-current"></div>
+					</div>
+					<div class="bk-container" id="bk_container_gray">
+						<div class="bk-container-current"></div>
+					</div>
+					<div class="bk-container" id="bk_container_green">
+						<div class="bk-container-current"></div>
+					</div>
+					<div class="bk-container" id="bk_container_blue">
+						<div class="bk-container-current"></div>
+					</div>
+					<div class="bk-container" id="bk_container_black">
+						<div class="bk-container-current"></div>
+					</div>
 				</div>
 			</div>
         </div>
         
 		<script src="lib/zepto.min.js"></script>
 		<script>
-			window.jQuery = $;
+			window.jQuery = $
 		</script>
 		<script src="js/jquery.base64.js"></script>
 		<script src="js/jquery.jsonp.js"></script>
 
 		<script>
-			
+			(function () {
+				// 封装一个类
+				var Util = (function () {
+					var prefix = 'html5_reader_'
+					var StorageGetter = function (key) {
+						return localStorage.getItem(prefix + key)
+					}
+					var StorageSetter = function (key, val) {
+						return localStorage.setItem(prefix + key, val)
+					}
+					return {
+						StorageGetter: StorageGetter,
+						StorageSetter: StorageSetter
+					}
+				}) ()
+
+				var Dom = {
+					top_nav: $('#top_nav'),
+					bottom_nav: $('#bottom_nav'),
+					font_container: $('.js-font-container'),
+					icon_font: $('.icon-font')
+				}
+
+				var Win = $(window)
+				var Doc = $(document)
+
+				function main () {
+					//入口函数
+					ReaderEventsHanlder()
+				}
+
+				function ReaderModel () {
+					// todo 实现和阅读器相关的数据交互的方法，和服务器端的交互
+					
+				}
+
+				function ReaderBaseFrame () {
+					// todo 渲染UI结构
+				}
+
+				function ReaderEventsHanlder () {
+					// todo 交互事件绑定
+					// 点击中间区域显示或隐藏上下边栏
+					$('#artical_action_mid').click(function () {
+						if (Dom.top_nav.css('display') == 'none') {
+							Dom.top_nav.show()
+							Dom.bottom_nav.show()
+							Dom.icon_font.removeClass('current')
+						} else {
+							Dom.top_nav.hide()
+							Dom.bottom_nav.hide()
+							Dom.font_container.hide()
+						}
+					})
+					// 滚动隐藏上下边栏
+					Win.scroll(function () {
+						Dom.top_nav.hide()
+						Dom.bottom_nav.hide()
+						Dom.font_container.hide()
+					})
+					// 切换白天夜间
+					$('#night_day_button').click(function () {
+						
+					})
+					//显示隐藏字体设置栏
+					$('#font_button').click(function () {
+						if(Dom.font_container.css('display') == 'none') {
+							Dom.font_container.show()
+							Dom.icon_font.addClass('current')
+						} else {
+							Dom.font_container.hide()
+							Dom.icon_font.removeClass('current')
+						}
+					})
+				}
+
+				main()
+			}) ()
 		</script>
 	</body>
 </html>
