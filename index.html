@@ -344,7 +344,7 @@
 						StorageSetter: StorageSetter
 					}
 				}) ()
-
+				// 声明常量值
 				var Dom = {
 					top_nav: $('#top_nav'),
 					bottom_nav: $('#bottom_nav'),
@@ -354,6 +354,14 @@
 
 				var Win = $(window)
 				var Doc = $(document)
+				// 初始字体大小
+				var RootContainer = $('#fiction_container')
+				var initFontSize = Util.StorageGetter('font_size');
+				initFontSize = parseInt(initFontSize)
+				if(!initFontSize) {
+					initFontSize = 14;
+				}
+				RootContainer.css('font-size', initFontSize)
 
 				function main () {
 					//入口函数
@@ -393,7 +401,7 @@
 					$('#night_day_button').click(function () {
 						
 					})
-					//显示隐藏字体设置栏
+					// 显示隐藏字体设置栏
 					$('#font_button').click(function () {
 						if(Dom.font_container.css('display') == 'none') {
 							Dom.font_container.show()
@@ -402,6 +410,24 @@
 							Dom.font_container.hide()
 							Dom.icon_font.removeClass('current')
 						}
+					})
+					// 放大字体
+					$('#large_font').click(function () {
+						if(initFontSize > 20) {
+							return
+						}
+						initFontSize += 1
+						RootContainer.css('font-size', initFontSize)
+						Util.StorageSetter('font_size', initFontSize)
+					})
+					// 缩小字体
+					$('#small_font').click(function () {
+						if (initFontSize < 12) {
+							return
+						}
+						initFontSize -= 1
+						RootContainer.css('font-size', initFontSize)
+						Util.StorageSetter('font_size', initFontSize)
 					})
 				}
 
