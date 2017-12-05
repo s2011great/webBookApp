@@ -211,7 +211,6 @@
 				width: 32px;
 				height: 32px;
 				border-radius: 16px;
-				/* border: 1px solid #ff7800; */
 				display: inline-block;
 				top: -2px;
 				left: -2px;
@@ -299,11 +298,11 @@
 				</div>
 				<div class="child-mod">
 					<span>背景</span>
-					<div class="bk-container">
+					<div class="bk-container" id="bk_container_white">
 						<div class="bk-container-current"></div>
 					</div>
 					<div class="bk-container" id="bk_container_pink">
-						<div class="bk-container-current"></div>
+						<div class="bk-container-current bk-border-current"></div>
 					</div>
 					<div class="bk-container" id="bk_container_gray">
 						<div class="bk-container-current"></div>
@@ -428,6 +427,11 @@
 						initFontSize -= 1
 						RootContainer.css('font-size', initFontSize)
 						Util.StorageSetter('font_size', initFontSize)
+					})
+					// 背景切换
+					$('.bk-container').click(function () {
+						$('body').css('background', $(this).css('background'))
+						$(this).children('.bk-container-current').addClass('bk-border-current')
 					})
 				}
 
