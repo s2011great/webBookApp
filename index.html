@@ -338,7 +338,20 @@
 					var StorageSetter = function (key, val) {
 						return localStorage.setItem(prefix + key, val)
 					}
+					var getJSONP = function (url, callback) {
+						return $.jsonp({
+							url: url,
+							cache: true,
+							callback: 'duokan_fiction_chapter',
+							success: function (result) {
+								var data = $.base64.decode(result)
+								var json = decodeURIComponent(data)
+								callback(data)
+							}
+						})
+					}
 					return {
+						getJSONP: getJSONP,
 						StorageGetter: StorageGetter,
 						StorageSetter: StorageSetter
 					}
@@ -350,7 +363,9 @@
 					font_container: $('.js-font-container'),
 					icon_font: $('.icon-font'),
 					body: $('body'),
-					bk_container_current: $('.bk-container-current')
+					bk_container_current: $('.bk-container-current'),
+					bk_container_white: $('#bk_container_white'),
+					bk_container_black: $('#bk_container_black')
 				}
 
 				var Win = $(window)
@@ -373,15 +388,55 @@
 					$('.bk-container').children('.bk-container-current').removeClass('bk-border-current')
 					$('#' + initBorderFatherId).children('.bk-container-current').addClass('bk-border-current')
 				}
+				// 初始化白天夜间
+				var initNightDayKey = Util.StorageGetter('night_day_key')
+				if(initNightDayKey) {
+					$.each($('#night_day_button').children('.item-warp'), function (key, val) {
+						if (key == initNightDayKey) {
+							$(val).show()
+						} else {
+							$(val).hide()
+						}
+					})
+				}
 
 				function main () {
 					//入口函数
+					var readerModel = ReaderModel()
+					readerModel.init()
 					ReaderEventsHanlder()
 				}
 
 				function ReaderModel () {
 					// todo 实现和阅读器相关的数据交互的方法，和服务器端的交互
-					
+					var Chapter_id
+					var init = function () {
+						getFictionInfo(function () {
+							getCurChapterContent(Chapter_id, function () {
+								// todo 渲染到UI
+							})
+						})
+					}
+					var getFictionInfo = function (callback) {
+						$.get('data/chapter.json', function (data) {
+							// todo 获取章节信息的回调
+							Chapter_id = data.chapters[1].chapter_id
+							callback && callback()
+						}, 'json')
+					}
+					var getCurChapterContent = function (chapter_id, callback) {
+						$.get('data/data' + chapter_id + '.json', function (data) {
+							if(data.result == 0) {
+								var url = data.jsonp
+								Util.getJSONP(url, function (data) {
+									callback && callback(data)
+								})
+							}
+						}, 'json')
+					}
+					return {
+						init: init
+					}
 				}
 
 				function ReaderBaseFrame () {
@@ -410,7 +465,28 @@
 					})
 					// 切换白天夜间
 					$('#night_day_button').click(function () {
-						
+						$.each($(this).children('.item-warp'), function (key, val) {
+							if($(val).css('display') == 'none') {
+								$(val).show()
+							} else {
+								$(val).hide()
+							}
+							if (key == 0 && $(val).css('display') == 'block') {
+								Dom.body.css('background', Dom.bk_container_white.css('background'))
+								Dom.bk_container_current.removeClass('bk-border-current')
+								Dom.bk_container_white.children('.bk-container-current').addClass('bk-border-current')
+								Util.StorageSetter('background', Dom.bk_container_white.css('background-color'))
+								Util.StorageSetter('bk_border_current', Dom.bk_container_white.attr('id'))
+								Util.StorageSetter('night_day_key', 0)
+							} else if(key == 1 && $(val).css('display') == 'block') {
+								Dom.body.css('background', Dom.bk_container_black.css('background'))
+								Dom.bk_container_current.removeClass('bk-border-current')
+								Dom.bk_container_black.children('.bk-container-current').addClass('bk-border-current')
+								Util.StorageSetter('background', Dom.bk_container_black.css('background-color'))
+								Util.StorageSetter('bk_border_current', Dom.bk_container_black.attr('id'))
+								Util.StorageSetter('night_day_key', 1)
+							}
+						})
 					})
 					// 显示隐藏字体设置栏
 					$('#font_button').click(function () {
@@ -449,7 +525,6 @@
 						Util.StorageSetter('background', _this.css('background-color'))
 						Util.StorageSetter('bk_border_current', _this.attr('id'))
 					})
-					// 白天夜间切换
 				}
 
 				main()
