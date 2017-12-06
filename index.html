@@ -348,7 +348,9 @@
 					top_nav: $('#top_nav'),
 					bottom_nav: $('#bottom_nav'),
 					font_container: $('.js-font-container'),
-					icon_font: $('.icon-font')
+					icon_font: $('.icon-font'),
+					body: $('body'),
+					bk_container_current: $('.bk-container-current')
 				}
 
 				var Win = $(window)
@@ -361,6 +363,16 @@
 					initFontSize = 14;
 				}
 				RootContainer.css('font-size', initFontSize)
+				// 初始化背景
+				var initBackgroundColor = Util.StorageGetter('background')
+				var initBorderFatherId = Util.StorageGetter('bk_border_current')
+				if(initBackgroundColor) {
+					Dom.body.css('background', initBackgroundColor)
+				}
+				if(initBorderFatherId) {
+					$('.bk-container').children('.bk-container-current').removeClass('bk-border-current')
+					$('#' + initBorderFatherId).children('.bk-container-current').addClass('bk-border-current')
+				}
 
 				function main () {
 					//入口函数
@@ -430,9 +442,14 @@
 					})
 					// 背景切换
 					$('.bk-container').click(function () {
-						$('body').css('background', $(this).css('background'))
-						$(this).children('.bk-container-current').addClass('bk-border-current')
+						var _this = $(this)
+						Dom.body.css('background', _this.css('background'))
+						Dom.bk_container_current.removeClass('bk-border-current')
+						_this.children('.bk-container-current').addClass('bk-border-current')
+						Util.StorageSetter('background', _this.css('background-color'))
+						Util.StorageSetter('bk_border_current', _this.attr('id'))
 					})
+					// 白天夜间切换
 				}
 
 				main()
