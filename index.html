@@ -253,11 +253,7 @@
 			</div>
             <div id="fiction_chapter_title"></div>
             <div id="fiction_container" class="m-read-content">
-				<h4>第一章、打世界顶尖级</h4>
-				<p>啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干</p>
-				<p>啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干</p>
-				<p>啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干</p>
-				<p>啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干啊实打实大苏打撒旦撒旦犯得上广泛豆腐干</p>
+				
 			</div>
             <div class="m-button-bar">
                 <ul class="u-tab">
@@ -346,7 +342,7 @@
 							success: function (result) {
 								var data = $.base64.decode(result)
 								var json = decodeURIComponent(data)
-								callback(data)
+								callback(json)
 							}
 						})
 					}
@@ -403,17 +399,21 @@
 				function main () {
 					//入口函数
 					var readerModel = ReaderModel()
-					readerModel.init()
+					var readerUI = ReaderBaseFrame(RootContainer)
+					readerModel.init(function (data) {
+						readerUI(data)
+					})
 					ReaderEventsHanlder()
 				}
 
 				function ReaderModel () {
 					// todo 实现和阅读器相关的数据交互的方法，和服务器端的交互
 					var Chapter_id
-					var init = function () {
+					var init = function (UIcallback) {
 						getFictionInfo(function () {
-							getCurChapterContent(Chapter_id, function () {
+							getCurChapterContent(Chapter_id, function (data) {
 								// todo 渲染到UI
+								UIcallback && UIcallback(data)
 							})
 						})
 					}
@@ -439,8 +439,20 @@
 					}
 				}
 
-				function ReaderBaseFrame () {
+				function ReaderBaseFrame (container) {
 					// todo 渲染UI结构
+					function parseChapterData (jsonData) {
+						var jsonObj = JSON.parse(jsonData)
+						var html = '<h4>' + jsonObj.t + '</h4>'
+						for(var i = 0; i < jsonObj.p.length; i++) {
+							html += '<p>' + jsonObj.p[i] + '</p>'
+						}
+						return html
+					}
+
+					return function (data) {
+						container.html(parseChapterData(data))
+					}
 				}
 
 				function ReaderEventsHanlder () {
